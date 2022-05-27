@@ -1,0 +1,31 @@
+<html>
+   <head>
+      <!-- Load WebAssembly module -->
+      <script type="text/javascript" src="grid.js"></script>
+   </head>
+   <body>
+      <div>
+         KBE calculation =
+         <span id="answer"/>
+      </div>
+      <script>
+         createModule().then(({KBE}) => {
+            const N0 = 2500;
+            const dt = 0.0001;
+            const h = 0.5;
+            const flag_age = 1;
+            const lkhd_cutoff_ratio = 5.0;
+            const n_sub_steps = 20;
+            const grid_option = 2;
+            const kbe = new KBE(N0, dt, h, flag_age, lkhd_cutoff_ratio, n_sub_steps, grid_option);
+            const root = kbe.evolve_test(0.01);
+            var rootSize = root.size();
+            console.log("size=", rootSize);
+            console.log("item 0=", root.get(0));
+            console.log("item 1=", root.get(1));
+            document.getElementById("answer").innerHTML = root.get(0).toExponential() + " and "
+                + root.get(1).toExponential();
+         });
+      </script>
+   </body>
+</html>
