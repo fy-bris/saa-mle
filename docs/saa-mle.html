@@ -195,7 +195,7 @@ summary {
 
 <div id="introduction" class="section level1" number="1">
 <h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
-<p>The <code>saa</code> app is a javascript/C++ implementation of the algorithm outlined in this <a href="https://doi.org/10.1534/genetics.120.303400">paper</a>. The C++ part is essentially the same as in our original <code>R</code> <a href="https://https://github.com/zhangyi-he/WFM-1L-DiffusApprox-KBE">implementation</a> but written with more care and consideration. The javascript part handles the user interface. The app has been tested in Google Chrome version 101.0.4951.64. Performance on any other browser is not guaranteed. A separate command-line program will be available soon.</p>
+<p>The <code>saa</code> app is a javascript/C++ implementation of the algorithm outlined in this <a href="https://doi.org/10.1534/genetics.120.303400">paper</a>. The C++ part is essentially the same as in our original <code>R</code> <a href="https://github.com/zhangyi-he/WFM-1L-DiffusApprox-KBE">implementation</a> but written with more care and consideration. The javascript part handles the user interface. The app has been tested in Google Chrome version 101.0.4951.64. Performance on any other browser is not guaranteed. A separate command-line program will be available soon.</p>
 <p>The main idea of the paper is to compress generations of the Wright-Fisher process by a factor <span class="math inline">\(2N_0\)</span>, where <span class="math inline">\(N_0\)</span> is the reference population size in a diploid population, to obtain an approximation by the following Wright-Fisher diffusion <span class="math display">\[ dX = 2 s N_0 X(1-X) (1-h-(1-2h)X) \ dt + \frac 1 {\rho(t)} X(1-X) \ dW,
 \]</span> where</p>
 <ul>
