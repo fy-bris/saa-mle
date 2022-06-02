@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+
+
+<title>Maximum likelihood estimates of selection and allele age (saa)</title>
+
+<script src="saa-mle_files/header-attrs-2.5/header-attrs.js"></script>
+<script src="saa-mle_files/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="saa-mle_files/bootstrap-3.3.5/css/bootstrap.min.css" rel="stylesheet" />
+<script src="saa-mle_files/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="saa-mle_files/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="saa-mle_files/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="saa-mle_files/navigation-1.1/tabsets.js"></script>
+<link href="saa-mle_files/highlightjs-9.12.0/default.css" rel="stylesheet" />
+<script src="saa-mle_files/highlightjs-9.12.0/highlight.js"></script>
+<link href="saa-mle_files/anchor-sections-1.0/anchor-sections.css" rel="stylesheet" />
+<script src="saa-mle_files/anchor-sections-1.0/anchor-sections.js"></script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+
+
+<div class="fluid-row" id="header">
+
+
+
+<h1 class="title toc-ignore">Maximum likelihood estimates of selection and allele age (<a href="https://fy-bris.github.io/saa-mle/"><code>saa</code></a>)</h1>
+
+</div>
+
+
+<div id="introduction" class="section level1" number="1">
+<h1 number="1"><span class="header-section-number">1</span> Introduction</h1>
+<p>The <code>saa</code> app is a javascript/C++ implementation of the algorithm outlined in this <a href="https://doi.org/10.1534/genetics.120.303400">paper</a>. The C++ part is essentially the same as in our original <code>R</code> <a href="https://github.com/zhangyi-he/WFM-1L-DiffusApprox-KBE">implementation</a> but written with more care and consideration. The javascript part handles the user interface. The app has been tested in Google Chrome version 101.0.4951.64. Performance on any other browser is not guaranteed. A separate command-line program will be available soon.</p>
+<p>The purpose of the algorithm is to simultaneously estimate the selection coefficient and allele age from time-series counts data of a selected allele. The main idea of the paper is to compress generations of the Wright-Fisher process by a factor <span class="math inline">\(2N_0\)</span>, where <span class="math inline">\(N_0\)</span> is the reference population size in a diploid population, to obtain an approximation by the following Wright-Fisher diffusion <span class="math display">\[\begin{equation}
+dX = 2 s N_0 X(1-X) (1-h-(1-2h)X) \ dt + \sqrt{\frac 1 {\rho(t)} X(1-X)} \ dW, \qquad \qquad \qquad \qquad (1)
+\end{equation}\]</span> where</p>
+<ul>
+<li><span class="math inline">\(s\)</span> is the selection coefficient</li>
+<li><span class="math inline">\(h\)</span> is the dominance parameter</li>
+<li><span class="math inline">\(\rho(t)\)</span> is ratio of the population size over the reference population size <span class="math inline">\(N_0\)</span> at time <span class="math inline">\(t\)</span>.</li>
+</ul>
+<p>This technique is commonly known as the diffusion approximation of the Wright-Fisher process. The Wright-Fisher diffusion in (1) is conditioned to survive until the last sample time. For a fixed selection coefficient, we can solve the corresponding conditioned Kolmogorov backward equation (KBE) backwards in time from the last sample time while weighting by the probability of obtaining mutant counts in samples as time goes backwards. This will yield, for a fixed selection coefficient, the likelihood value of any time (before the last sample time) being the time when the allele originally arose. Of course, this likelihood is 0 after the first time when there is a non-zero mutant count. To obtain the maximum likelihood estimate of both the selection coefficient and the allele age, we perform a standard golden section search (GSS) on an interval of possible values for the selection coefficient.</p>
+</div>
+<div id="user-interface" class="section level1" number="2">
+<h1 number="2"><span class="header-section-number">2</span> User interface</h1>
+<p>The user interface is divided into 3 columns:</p>
+<ul>
+<li>left panel: parameters</li>
+<li>centre column: input and output plots</li>
+<li>right panel: input data and estimates</li>
+</ul>
+<div id="input-data" class="section level2" number="2.1">
+<h2 number="2.1"><span class="header-section-number">2.1</span> Input data</h2>
+<p>Time serial sample data must be uploaded in plain text format. It must have no header and have 3 columns. The first column should contain time in units of generations before the last sample, meaning the first column of the first row must be 0. The second column should contain the sample size at each sample time. The third column should contain the mutant count at each sample time. The head of the file looks like</p>
+<pre class="verbatim"><code>0 2 1
+6 4 2
+9 2 1
+17 2 2
+25 26 15</code></pre>
+<p>The optional historical population size data follow the same format but contains only two columns. The first column should contain time in units of generations before the last sample. The second column should contain the population size at corresponding times. Each row <code>(t, N)</code> means populations size at time <span class="math inline">\(t\)</span> changes to <span class="math inline">\(N\)</span>. The head of the file looks like</p>
+<pre class="verbatim"><code>0 8000
+484 4000
+984 8000</code></pre>
+<p>The program does not check for errors in input files, and may crash if supplied with incorrect input files, or nonsense parameters. The app comes pre-loaded with simulated samples from dataset 6 below, but users should obviously update data on their own. No data is uploaded to anywhere. It is simply stored in the web browser and thus will presumably disappear once the browser closes. All computation is done in the browser.</p>
+</div>
+<div id="parameters---left-panel" class="section level2" number="2.2">
+<h2 number="2.2"><span class="header-section-number">2.2</span> Parameters - left panel</h2>
+<p>The parameter settings are populated with sensible defaults. The only parameters the user should need to update is <span class="math inline">\(N_0\)</span> and <span class="math inline">\(h\)</span>. The estimate of the selection coefficient is somewhat insensitive to the value of <span class="math inline">\(N_0\)</span>, but the estimate of the allele age is.</p>
+<p>If “Advanced options” is selected, users can set <span class="math inline">\(n_{substep}\)</span> “number of sub-steps per unit of time”. In the numerical solution to the KBE, we take the size of each time step to be <span class="math inline">\(1/N_0\)</span>, which corresponds to 2 generations per time step. Each time step is further divided into <span class="math inline">\(n_{substep}\)</span> sub-steps. This is initially set to 20, but increases if during GSS, <span class="math inline">\(n_{substep}\)</span> is found to be too low for valid numerical solutions.</p>
+</div>
+<div id="estimates" class="section level2" number="2.3">
+<h2 number="2.3"><span class="header-section-number">2.3</span> Estimates</h2>
+<p>Estimates are plotted in the centre column. Numbers are displayed at the bottom in the right panel. The plots are updated after each step of GSS. The first step computes for <span class="math inline">\(s_{max}\)</span>, the second step for <span class="math inline">\(s_{min}\)</span>. Typically the computation takes longer for smaller selection coefficients, due to the likely allele age to be much further back in time. At the end of the computation, MLE esimates and 95% confidence intervals are displayed. The 95% confidence intervals are computed using ad-hoc techniques that generate results from computation already performed during GSS. They are meant for illustration only, but should still give some idea about the level of uncertainty in the estimates. For more proper estimation of confidence intervals, we suggest users perform bootstrapping using the command-line program.</p>
+</div>
+</div>
+<div id="validation" class="section level1" number="3">
+<h1 number="3"><span class="header-section-number">3</span> Validation</h1>
+<p>For the C++ implementation, we performed simulation studies using the following set of parameters.</p>
+<table>
+<thead>
+<tr class="header">
+<th>Dataset</th>
+<th><span class="math inline">\(s\)</span></th>
+<th><span class="math inline">\(h\)</span></th>
+<th>number of sample times</th>
+<th>sample size</th>
+<th>demography</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>0.01</td>
+<td>0.5</td>
+<td>60</td>
+<td>20</td>
+<td>constant <span class="math inline">\(N=8000\)</span></td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>0.016</td>
+<td>0.5</td>
+<td>60</td>
+<td>20</td>
+<td>constant <span class="math inline">\(N=8000\)</span></td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>0.006</td>
+<td>0.5</td>
+<td>60</td>
+<td>20</td>
+<td>constant <span class="math inline">\(N=8000\)</span></td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>0.01</td>
+<td>0</td>
+<td>60</td>
+<td>20</td>
+<td>constant <span class="math inline">\(N=8000\)</span></td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>0.01</td>
+<td>1</td>
+<td>60</td>
+<td>20</td>
+<td>constant <span class="math inline">\(N=8000\)</span></td>
+</tr>
+<tr class="even">
+<td>6</td>
+<td>0.01</td>
+<td>0.5</td>
+<td>20</td>
+<td>60</td>
+<td>constant <span class="math inline">\(N=8000\)</span></td>
+</tr>
+<tr class="odd">
+<td>7</td>
+<td>0.01</td>
+<td>0.5</td>
+<td>60</td>
+<td>20</td>
+<td>initial <span class="math inline">\(N=8000\)</span>, bottleneck <span class="math inline">\(N=4000\)</span> in generations <span class="math inline">\([750, 1250]\)</span></td>
+</tr>
+</tbody>
+</table>
+<p>The sample paths are generated using the following two <code>R</code> functions.</p>
+<pre class="r"><code>#&#39; Simulate the Wright-Fisher process
+#&#39; @Ntt, @NtN demography information, both vectors of the same length
+#&#39;    representing time and population size at this time. Population size
+#&#39;    assumed to be constant between neighbouring times. The last element
+#&#39;    of Ntt will be the last generation to be simulated.
+#&#39; @s selection coefficient
+#&#39; @h dominance parameter
+sim_wf = function(Ntt, NtN, s, h) {
+  fitness = c(1, 1-s*h, 1-s)
+  max_len = tail(Ntt, 1)
+  repeat {
+    x = rep(NA, max_len)
+    N = NtN[1]
+    x[1] = 1 / 2 / N
+    i_Nt = 1
+    for (k in 1:(max_len-1)) {
+      if (k == Ntt[i_Nt+1]) {
+        i_Nt = i_Nt + 1;
+        N = NtN[i_Nt]; #cat(&quot;N change to&quot;, N, &quot; at &quot;, k, &quot;\n&quot;)
+      }
+      ff = x[k]
+      geno_freq = fitness * c(ff*ff, 2*ff*(1-ff), (1-ff)*(1-ff))
+      geno_freq = geno_freq / sum(geno_freq)
+      ale_freq = geno_freq[1] + geno_freq[2]/2
+      x[k+1] = rbinom(1, size=2*N, prob=ale_freq)/2/N
+      if (x[k+1]==0) {x[(k+1):max_len] = 0; break}
+      if (x[k+1]==1) {x[(k+1):max_len] = 1; break}
+    }
+    if (tail(x, 1)&gt;0) break
+  }
+  return(x)
+}
+
+#&#39; Generate sample counts from Wright-Fisher process
+#&#39; @i_dataset dataset ID, used in the file name
+#&#39; @s selection coefficient
+#&#39; @h dominance parameter
+#&#39; @n_paths number of sample paths to generate
+#&#39; @n_samp number of sample times for each path
+#&#39; @samp_n sample size at each sample time
+#&#39; @k_final final time, should be taken to be large enough
+#&#39; @Ntt, @NtN demography information, both plugged into sim_wf
+#&#39; @f1, @f2 sample times are equally spaced between the mean trajectory of
+#&#39;    underlying Wright-Fisher process attaining frequency f1 and f2
+gen_samples = function(i_dataset, s, h, n_paths, n_samp, samp_n, k_final,
+    Ntt, NtN, f1=0.1, f2=0.9) {
+  x = matrix(NA, nrow=n_paths, ncol=k_final)
+  for (i in 1:n_paths) {
+    x[i,] = sim_wf(Ntt, NtN, s, h)
+  }
+  mean_path = colMeans(x)
+  k_first = which(mean_path&gt;f1)[1]
+  k_last = which(mean_path&gt;f2)[1]
+  samp_t = round(seq(k_first, k_last, length.out=n_samp))
+  samp_k = matrix(NA, nrow=n_paths, ncol=n_samp)
+  keep_flag = rep(FALSE, n_paths)
+  for (i in 1:n_paths) {
+    for (j in 1:n_samp) {
+      samp_k[i,j] = rbinom(1, size=samp_n, prob=x[i, samp_t[j]])
+    }
+    keep_flag[i] = (max(samp_k[i,])&gt;=1) &amp; (max(samp_n-samp_k[i,])&gt;0)
+  }
+  cat(&quot;s=&quot;, s, &quot;, h=&quot;, h, &quot;, &quot;, length(which(!keep_flag)), &quot; bad samples&quot;,
+    sep=&quot;&quot;)
+  save(s, h, x, Ntt, NtN, samp_t, samp_n, samp_k, keep_flag,
+    file=paste(&quot;samples&quot;, i_dataset, &quot;/samples.RData&quot;, sep=&quot;&quot;))
+}</code></pre>
+<p>The sample paths of datasets 1-5 are shown below. Counts data are generated from each sample path using binomial distributions at fixed sample times. In dataset 5, where <span class="math inline">\(h=1\)</span>, there are a significant number of paths whose frequencies are close to either 0 or 1 throughout the entire sampling range. This causes estimation to be more difficult than smaller values of <span class="math inline">\(h\)</span>. As can be seen in the boxplots below, this causes a few paths to yield negative estimates for the selection coefficient.</p>
+<p><img src="saa-mle_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>The boxplots of the MLE estimates of the 100 sampled paths from all datasets are shown below. The result mirrors those in the <a href="https://doi.org/10.1534/genetics.120.303400">paper</a>.</p>
+<p><img src="saa-mle_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+
+
+
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
